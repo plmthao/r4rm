@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<operators name="r-plugin" version="5.0" docbundle="de/mpicbg/tds/rm/rplugin/i18n/OperatorsDoc">
+    <group key="">
+
+        <group key="R integration">
+            <icon>chart_pie.png</icon>
+
+            <operator>
+                <key>r_snippet</key>
+                <class>de.mpicbg.tds.rm.rplugin.operators.RSnippetOperator</class>
+                <replaces>RSnippet</replaces>
+            </operator>
+
+            <operator>
+                <key>r_openinr</key>
+                <class>de.mpicbg.tds.rm.rplugin.operators.OpenInROperator</class>
+                <replaces>Open In R</replaces>
+            </operator>
+
+            <operator>
+                <key>r_plot</key>
+                <class>de.mpicbg.tds.rm.rplugin.operators.RPlotOperator</class>
+                <replaces>R Plot</replaces>
+            </operator>
+
+        </group>
+
+        <group key="HCS">
+            <icon>chart_pie.png</icon>
+
+
+            <group key="Screen Visualization">
+
+                <operator>
+                    <key>r_screen_lattice_plot</key>
+                    <class>de.mpicbg.tds.rm.rplugin.parameterized.LatticePlotOperator</class>
+                    <replaces>R Lattice Plot</replaces>
+                </operator>
+
+            </group>
+
+        </group>
+
+    </group>
+    <!--<factory>com.rapidminer.tools.WekaOperatorFactory</factory>-->
+
+
+</operators>
+

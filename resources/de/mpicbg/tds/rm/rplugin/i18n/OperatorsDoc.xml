@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="windows-1252" standalone="no"?>
+<operatorHelp lang="en_EN">
+    <!--<group>-->
+    <!--<key>reporting</key>-->
+    <!--<name>Reporting</name>-->
+    <!--</group>-->
+
+    <operator>
+        <key>r_snippet</key>
+        <name>R Snippet</name>
+        <synopsis>Allows to locallay run r-scripts against a given input</synopsis>
+        <help>This operator will make its input available in R (either running locally or remotely) and expose the
+            results at its output. TODO continue this...
+        </help>
+    </operator>
+
+    <operator>
+        <key>r_openinr</key>
+        <name>Open In R</name>
+        <synopsis>Creates a temporary workspace file for the input and opens a new R-Gui instance for it</synopsis>
+        <help>Creates a temporary workspace file for the input and opens a new R-Gui instance for it. TODO continue
+            this...
+        </help>
+    </operator>
+
+    <operator>
+        <key>r_plot</key>
+        <name>R Plot</name>
+        <synopsis>Creates an r-plot and show it.</synopsis>
+        <help>Creates an r-plot and show it. TODO continue this.</help>
+    </operator>
+
+    <operator>
+        <key>r_screen_lattice_plot</key>
+        <name>R Screen Lattice</name>
+        <synopsis>Creates a lattice of plot of a singel parameter of a screen</synopsis>
+        <help>Creates an r-plot and show it. TODO continue this.</help>
+    </operator>
+
+
+    <!-- copied from knime
+    With this feature that integrates the statistics project R into KNIME it is possible to run snippets of R code
+    s one step of the workflow, open R views, or even learn models within R. You can either integrate your
+    local R installation or connect to an R Server-->
+</operatorHelp>

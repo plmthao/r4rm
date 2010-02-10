@@ -1,0 +1,55 @@
+<project name="r4rm" default="updatePlugin">
+    <description>Build file for the R-plugin for RapidMiner</description>
+
+    <property name="rm.dir" location="${rapidminer.dir}"/>
+
+    <property name="build.build" location="build"/>
+    <property name="build.resources" location="resources"/>
+    <property name="build.lib" location="lib"/>
+
+    <property name="check.sources" location="src"/>
+
+    <property name="javadoc.targetDir" location="javadoc"/>
+
+    <property name="extension.name" value="R4RM"/>
+    <property name="extension.name.long" value="R Plugin for RapidMiner"/>
+    <property name="extension.namespace" value="r4rm"/>
+    <property name="extension.admin" value="Holger Brandl"/>
+    <property name="extension.vendor"
+              value="Max Planck Institute of Molecular Cell Biology and Genetics, Dresden, Germany"/>
+    <property name="extension.url" value="http://mpi-cbg.de/"/>
+    <property name="extension.version" value="0.7"/>
+    <property name="extension.revision" value="0"/>
+
+    <property name="extension.needsVersion" value="5.0"/>
+    <property name="extension.dependencies" value=""/>
+
+    <property name="extension.initClass" value="de.mpicbg.tds.rm.rplugin.PluginInitializer"/>
+    <property name="extension.objectDefinition" value="/de/mpicbg/tds/rm/rplugin/ioobjects.xml"/>
+    <property name="extension.operatorDefinition" value="/de/mpicbg/tds/rm/rplugin/operators.xml"/>
+    <property name="extension.parseRuleDefinition" value="/de/mpicbg/tds/rm/rplugin/parserules.xml"/>
+    <property name="extension.groupProperties" value="/de/mpicbg/tds/rm/rplugin/groups.properties"/>
+    <property name="extension.errorDescription" value="/de/mpicbg/tds/rm/rplugin/i18n/Errors"/>
+    <property name="extension.userErrors" value="/de/mpicbg/tds/rm/rplugin/i18n/UserErrorMessages.properties"/>
+    <property name="extension.guiDescription" value="/de/mpicbg/tds/rm/rplugin/i18n/GUI.properties"/>
+
+
+    <!-- Src files -->
+    <path id="build.sources.path">
+        <dirset dir="src">
+            <include name="**"/>
+        </dirset>
+    </path>
+    <fileset dir="src" id="build.sources">
+        <include name="**/*.java"/>
+    </fileset>
+    <fileset id="build.dependentExtensions" dir="..">
+        <exclude name="**/*"/>
+    </fileset>
+
+    <import file="${rm.dir}/build_extension.xml"/>
+
+    <target name="updatePlugin" depends="createJar">
+        <copy failonerror="true" file="${release.targetDir}/${release.name}" todir="../rm5/lib/plugins"/>
+    </target>
+</project>

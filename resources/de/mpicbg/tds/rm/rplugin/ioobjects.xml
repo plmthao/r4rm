@@ -1,0 +1,10 @@
+<ioobjects>
+
+    <ioobject
+            name="R Plot"
+            class="de.mpicbg.tds.rm.rplugin.RViewExampleSet2"
+            reportable="false">
+        <!--<renderer>com.rapidminer.gui.renderer.DefaultTextRenderer</renderer>-->
+        <renderer>de.mpicbg.tds.rm.rplugin.gui.DynamicRPlotRenderer</renderer>
+    </ioobject>
+</ioobjects>
