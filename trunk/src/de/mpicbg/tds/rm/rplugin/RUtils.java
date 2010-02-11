@@ -33,6 +33,7 @@ public class RUtils {
 			int counter;
 			switch (attribute.getValueType()) {
 				case Ontology.STRING:
+				case Ontology.DATE:
 				case Ontology.NOMINAL:
 					String[] strColumn = new String[numRows];
 
