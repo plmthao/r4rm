@@ -6,6 +6,7 @@ import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.table.AttributeFactory;
 import com.rapidminer.example.table.DoubleArrayDataRow;
 import com.rapidminer.example.table.MemoryExampleTable;
+import com.rapidminer.operator.IOObject;
 import com.rapidminer.tools.Ontology;
 import org.rosuda.REngine.*;
 import org.rosuda.REngine.Rserve.RConnection;
@@ -13,6 +14,7 @@ import org.rosuda.REngine.Rserve.RserveException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -169,7 +171,7 @@ public class RUtils {
 
 	public static RConnection createConnection() {
 
-		String host = System.getProperty(PluginInitializer.R_SERVE_HOST, PluginInitializer.R_SERVE_HOST_DEFAULT);
+		String host = getHost();
 		int port = Integer.parseInt(System.getProperty(PluginInitializer.R_SERVE_PORT, PluginInitializer.R_SERVE_PORT_DEFAULT + ""));
 
 		try {
@@ -177,5 +179,28 @@ public class RUtils {
 		} catch (RserveException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public static String getHost() {
+		return System.getProperty(PluginInitializer.R_SERVE_HOST, PluginInitializer.R_SERVE_HOST_DEFAULT);
+	}
+
+	public static List<String> push2R(RConnection connection, List<IOObject> inputs) throws RserveException, REXPMismatchException {
+		List<String> parNames = new ArrayList<String>();
+
+		for (int i = 0, inputSize = inputs.size(); i < inputSize; i++) {
+			IOObject ioObject = inputs.get(i);
+			if (!(ioObject instanceof ExampleSet))
+				throw new RuntimeException();
+
+			ExampleSet exampleSet = (ExampleSet) ioObject;
+
+			RList inputAsRList = convert2RList(exampleSet);
+			String parName = "exSet" + (inputs.size() > 1 ? (i + 1) : "");
+			parNames.add(parName);
+
+			connection.assign(parName, REXP.createDataFrame(inputAsRList));
+		}
+		return parNames;
 	}
 }

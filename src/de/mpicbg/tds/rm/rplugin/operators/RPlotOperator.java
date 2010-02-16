@@ -1,12 +1,11 @@
 package de.mpicbg.tds.rm.rplugin.operators;
 
-import com.rapidminer.example.ExampleSet;
+import com.rapidminer.operator.IOObject;
 import com.rapidminer.operator.Operator;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
-import com.rapidminer.operator.ports.InputPort;
+import com.rapidminer.operator.ports.InputPortExtender;
 import com.rapidminer.operator.ports.OutputPort;
-import com.rapidminer.operator.ports.metadata.PassThroughRule;
 import com.rapidminer.parameter.ParameterType;
 import com.rapidminer.parameter.ParameterTypeText;
 import com.rapidminer.parameter.TextType;
@@ -14,7 +13,6 @@ import com.rapidminer.parameter.UndefinedParameterError;
 import de.mpicbg.tds.rm.rplugin.RImageFactory;
 import de.mpicbg.tds.rm.rplugin.RUtils;
 import de.mpicbg.tds.rm.rplugin.RViewExampleSet2;
-import org.rosuda.REngine.REXP;
 import org.rosuda.REngine.RList;
 import org.rosuda.REngine.Rserve.RConnection;
 
@@ -31,14 +29,13 @@ public class RPlotOperator extends Operator {
 
 	public String SCRIPT_PROPERTY = "plot-script";
 
-	protected InputPort exampleSetInput = getInputPorts().createPort("example set input", true);
+	private InputPortExtender inputs = new InputPortExtender("input table", getInputPorts());
 	protected OutputPort exampleSetOutput = getOutputPorts().createPort("example set output");
-
 
 	public RPlotOperator(OperatorDescription description) {
 		super(description);
 
-		getTransformer().addRule(new PassThroughRule(exampleSetInput, exampleSetOutput, false));
+		inputs.start();
 	}
 
 
@@ -53,11 +50,8 @@ public class RPlotOperator extends Operator {
 
 			// 1) convert exampleSet ihnto data-frame and put into the r-workspace
 			RList inputAsRList = null;
-			if (exampleSetInput.isConnected()) {
-				ExampleSet exampleSet = exampleSetInput.getData();
-				inputAsRList = RUtils.convert2RList(exampleSet);
-				connection.assign("inA", REXP.createDataFrame(inputAsRList));
-			}
+
+			RUtils.push2R(connection, inputs.<IOObject>getData(true));
 
 			// 2) create the image the script
 			Image image = RImageFactory.createImage(connection, script, 900, 700);
@@ -65,8 +59,6 @@ public class RPlotOperator extends Operator {
 			// close the connection to R
 			connection.close();
 
-			// todo finalize this
-//            exampleSetOutput.deliver(new RViewExampleSet(image));
 			exampleSetOutput.deliver(new RViewExampleSet2(script, inputAsRList));
 
 		} catch (Throwable e) {

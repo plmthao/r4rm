@@ -2,3 +2,5 @@
 
 0.8 (not yet released)
 - fixed: handling of dates
+- feature: customizable connection to rserve instance
+

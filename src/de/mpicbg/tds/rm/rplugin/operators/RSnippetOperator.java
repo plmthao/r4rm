@@ -4,15 +4,12 @@ import com.rapidminer.example.ExampleSet;
 import com.rapidminer.operator.Operator;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
-import com.rapidminer.operator.ports.InputPort;
+import com.rapidminer.operator.ports.InputPortExtender;
 import com.rapidminer.operator.ports.OutputPort;
-import com.rapidminer.operator.ports.metadata.PassThroughRule;
 import com.rapidminer.parameter.ParameterType;
 import com.rapidminer.parameter.ParameterTypeText;
 import com.rapidminer.parameter.TextType;
 import de.mpicbg.tds.rm.rplugin.RUtils;
-import org.rosuda.REngine.REXP;
-import org.rosuda.REngine.RList;
 import org.rosuda.REngine.Rserve.RConnection;
 
 import java.util.List;
@@ -33,10 +30,9 @@ public class RSnippetOperator extends Operator {
 
 	public RConnection connection;
 
-	private InputPort exampleSetInput = getInputPorts().createPort("example set input", true);
-
 	private OutputPort exampleSetOutput = getOutputPorts().createPort("example set output");
 
+	private InputPortExtender inputs = new InputPortExtender("input table", getInputPorts());
 	// todo add a few more inputs
 //    private OutputPort originalOutput = getOutputPorts().createPort("original");
 //    private OutputPort modelOutput = getOutputPorts().createPort("preprocessing model");
@@ -46,7 +42,8 @@ public class RSnippetOperator extends Operator {
 
 		super(description);
 
-		getTransformer().addRule(new PassThroughRule(exampleSetInput, exampleSetOutput, false));
+		inputs.start();
+//		getTransformer().addRule(new PassThroughRule(inputs.getManagedPorts().get(0), exampleSetOutput, false));
 //        getTransformer().addRule(new PassThroughRule(exampleSetInput, originalOutput, false));
 //        getTransformer().addRule(dummyPortPairA.makePassThroughRule());
 	}
@@ -60,11 +57,8 @@ public class RSnippetOperator extends Operator {
 			connection = RUtils.createConnection();
 
 			// 1) convert exampleSet ihnto data-frame and put into the r-workspace
-			if (exampleSetInput.isConnected()) {
-				ExampleSet exampleSet = exampleSetInput.getData();
-				RList inputAsRList = RUtils.convert2RList(exampleSet);
-				connection.assign("inA", REXP.createDataFrame(inputAsRList));
-			}
+			RUtils.push2R(connection, inputs.getData(true));
+
 
 			// 2) run the script  (remove all linebreaks and other no space whitespace-characters
 			connection.eval(RUtils.prepare4RExecution(script));
