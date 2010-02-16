@@ -6,6 +6,7 @@ import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
 import com.rapidminer.operator.ports.InputPortExtender;
 import com.rapidminer.operator.ports.OutputPort;
+import com.rapidminer.operator.ports.OutputPortExtender;
 import com.rapidminer.parameter.ParameterType;
 import com.rapidminer.parameter.ParameterTypeText;
 import com.rapidminer.parameter.TextType;
@@ -26,26 +27,17 @@ public class RSnippetOperator extends Operator {
 
 	public String SCRIPT_PROPERTY = "R-Script";
 
-//    private PortPairExtender dummyPortPairA = new DummyPortPairExtender("inputA", getInputPorts(), getOutputPorts());
-
 	public RConnection connection;
 
 	private OutputPort exampleSetOutput = getOutputPorts().createPort("example set output");
-
 	private InputPortExtender inputs = new InputPortExtender("input table", getInputPorts());
-	// todo add a few more inputs
-//    private OutputPort originalOutput = getOutputPorts().createPort("original");
-//    private OutputPort modelOutput = getOutputPorts().createPort("preprocessing model");
+	private OutputPortExtender outputs = new OutputPortExtender("routputss", getOutputPorts());
 
 
 	public RSnippetOperator(OperatorDescription description) {
-
 		super(description);
 
 		inputs.start();
-//		getTransformer().addRule(new PassThroughRule(inputs.getManagedPorts().get(0), exampleSetOutput, false));
-//        getTransformer().addRule(new PassThroughRule(exampleSetInput, originalOutput, false));
-//        getTransformer().addRule(dummyPortPairA.makePassThroughRule());
 	}
 
 
@@ -64,13 +56,15 @@ public class RSnippetOperator extends Operator {
 			connection.eval(RUtils.prepare4RExecution(script));
 
 			// 3) extract output data-frame from R
-			ExampleSet outA = RUtils.convert2ExSet(connection.eval("outA"));
+			int outCounter = 1;
+			for (OutputPort outputPort : outputs.getManagedPorts()) {
+				ExampleSet ouput = RUtils.convert2ExSet(connection.eval("out" + outCounter));
+				outputPort.deliver(ouput);
+			}
 
 			connection.eval("rm(list = ls(all = TRUE));");
 			connection.close();
-
-			exampleSetOutput.deliver(outA);
-
+			
 		} catch (Throwable e) {
 			connection.close();
 			throw new OperatorException("R script execution failed: " + script, e);
@@ -84,7 +78,7 @@ public class RSnippetOperator extends Operator {
 	public List<ParameterType> getParameterTypes() {
 		List<ParameterType> types = super.getParameterTypes();
 
-		ParameterTypeText parScript = new ParameterTypeText(SCRIPT_PROPERTY, "The R-script which should be executed. Inputs are available as inA - inD. Outputs are expected to be named outA-outD.", TextType.PLAIN, "outA = inA;");
+		ParameterTypeText parScript = new ParameterTypeText(SCRIPT_PROPERTY, "The R-script which should be executed. Inputs are available as inA - inD. Outputs are expected to be named outA-outD.", TextType.PLAIN, "out1 = in1;");
 		parScript.setExpert(false);
 		types.add(parScript);
 
