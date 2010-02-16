@@ -35,7 +35,7 @@ public class OpenInROperator extends AbstractExampleSetWriter {
 	@Override
 	public ExampleSet write(ExampleSet exampleSet) throws OperatorException {
 		try {
-			RConnection connection = new RConnection();
+			RConnection connection = RUtils.createConnection();
 
 			// 1) convert exampleSet ihnto data-frame and put into the r-workspace
 			RList inputAsRList = RUtils.convert2RList(exampleSet);

@@ -8,6 +8,7 @@ import com.rapidminer.example.table.DoubleArrayDataRow;
 import com.rapidminer.example.table.MemoryExampleTable;
 import com.rapidminer.tools.Ontology;
 import org.rosuda.REngine.*;
+import org.rosuda.REngine.Rserve.RConnection;
 import org.rosuda.REngine.Rserve.RserveException;
 
 import java.util.ArrayList;
@@ -166,4 +167,15 @@ public class RUtils {
 	}
 
 
+	public static RConnection createConnection() {
+
+		String host = System.getProperty(PluginInitializer.R_SERVE_HOST, PluginInitializer.R_SERVE_HOST_DEFAULT);
+		int port = Integer.parseInt(System.getProperty(PluginInitializer.R_SERVE_PORT, PluginInitializer.R_SERVE_PORT_DEFAULT + ""));
+
+		try {
+			return new RConnection(host, port);
+		} catch (RserveException e) {
+			throw new RuntimeException(e);
+		}
+	}
 }

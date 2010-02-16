@@ -57,7 +57,7 @@ public class RSnippetOperator extends Operator {
 		String script = getParameterAsString(SCRIPT_PROPERTY);
 
 		try {
-			connection = new RConnection();
+			connection = RUtils.createConnection();
 
 			// 1) convert exampleSet ihnto data-frame and put into the r-workspace
 			if (exampleSetInput.isConnected()) {

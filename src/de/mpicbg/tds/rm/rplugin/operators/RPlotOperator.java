@@ -49,7 +49,7 @@ public class RPlotOperator extends Operator {
 		RConnection connection = null;
 
 		try {
-			connection = new RConnection();
+			connection = RUtils.createConnection();
 
 			// 1) convert exampleSet ihnto data-frame and put into the r-workspace
 			RList inputAsRList = null;
