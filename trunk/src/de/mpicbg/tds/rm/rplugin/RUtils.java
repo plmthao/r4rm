@@ -196,7 +196,7 @@ public class RUtils {
 			ExampleSet exampleSet = (ExampleSet) ioObject;
 
 			RList inputAsRList = convert2RList(exampleSet);
-			String parName = "exSet" + (inputs.size() > 1 ? (i + 1) : "");
+			String parName = "in" + (inputs.size() > 1 ? (i + 1) : "");
 			parNames.add(parName);
 
 			connection.assign(parName, REXP.createDataFrame(inputAsRList));

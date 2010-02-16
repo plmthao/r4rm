@@ -33,7 +33,7 @@
 
                 <operator>
                     <key>r_screen_lattice_plot</key>
-                    <class>de.mpicbg.tds.rm.rplugin.parameterized.LatticePlotOperator</class>
+                    <class>de.mpicbg.tds.rm.hcstools.visualization.LatticePlotOperator</class>
                     <replaces>R Lattice Plot</replaces>
                 </operator>
 

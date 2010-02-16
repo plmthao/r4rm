@@ -36,10 +36,17 @@ public class OpenInROperator extends Operator {
 	public void doWork() throws OperatorException {
 
 		try {
+
+			List<IOObject> inputs = this.inputs.getData(true);
+
+			if(inputs.isEmpty()) {
+				// if there's no data we don't do nothing
+				return;
+			}
+
 			RConnection connection = RUtils.createConnection();
 
 			// 1) convert exampleSet ihnto data-frame and put into the r-workspace
-			List<IOObject> inputs = this.inputs.getData(true);
 
 
 			List<String> parNames = RUtils.push2R(connection, inputs);

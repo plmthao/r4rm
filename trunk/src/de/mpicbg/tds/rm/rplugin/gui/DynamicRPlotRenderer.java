@@ -2,11 +2,11 @@ package de.mpicbg.tds.rm.rplugin.gui;
 
 import com.rapidminer.gui.renderer.AbstractRenderer;
 import com.rapidminer.operator.IOContainer;
+import com.rapidminer.operator.IOObject;
 import com.rapidminer.report.Reportable;
 import de.mpicbg.tds.rm.rplugin.RImageFactory;
-import de.mpicbg.tds.rm.rplugin.RViewExampleSet2;
-import org.rosuda.REngine.REXP;
-import org.rosuda.REngine.RList;
+import de.mpicbg.tds.rm.rplugin.RPlotIOObject;
+import de.mpicbg.tds.rm.rplugin.RUtils;
 import org.rosuda.REngine.Rserve.RConnection;
 
 import javax.swing.*;
@@ -15,6 +15,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.PixelGrabber;
+import java.util.List;
 
 
 /**
@@ -28,7 +29,7 @@ public class DynamicRPlotRenderer extends AbstractRenderer {
 
 	@Override
 	public Reportable createReportable(final Object renderable, IOContainer ioContainer, int desiredWidth, int desiredHeight) {
-		return null;
+		return null ;
 	}
 
 
@@ -40,7 +41,7 @@ public class DynamicRPlotRenderer extends AbstractRenderer {
 
 	@Override
 	public Component getVisualizationComponent(Object renderable, IOContainer ioContainer) {
-		RViewExampleSet2 exampleSet = (RViewExampleSet2) renderable;
+		RPlotIOObject exampleSet = (RPlotIOObject) renderable;
 
 		//        MediaTracker mediaTracker = new MediaTracker(canvas);
 //        mediaTracker.addImage(image, 0);
@@ -54,7 +55,7 @@ public class DynamicRPlotRenderer extends AbstractRenderer {
 //
 //        canvas.setSize(image.getWidth(null), image.getHeight(null));
 
-		return new RPlotCanvas(exampleSet.getScript(), exampleSet.getRList());
+		return new RPlotCanvas(exampleSet.getScript(), exampleSet.getInputs());
 	}
 
 
@@ -63,25 +64,25 @@ public class DynamicRPlotRenderer extends AbstractRenderer {
 		private Image image;
 
 
-		public RPlotCanvas(final String script, final RList rList) {
+		public RPlotCanvas(final String script, final List<IOObject> inputs) {
 			addComponentListener(new ComponentAdapter() {
 				@Override
 				public void componentResized(ComponentEvent e) {
 					if (!isVisible())
 						return;
 
-					image = recreateImage(rList, script);
+					image = recreateImage(inputs, script);
 				}
 			});
 		}
 
 
-		public BufferedImage recreateImage(RList rList, String script) {
+		public BufferedImage recreateImage(List<IOObject> inputs, String script) {
 			RConnection connection = null;
 			try {
 				connection = new RConnection();
 
-				connection.assign("inA", REXP.createDataFrame(rList));
+				RUtils.push2R(connection, inputs);
 
 				BufferedImage bufferedImage = toBufferedImage(RImageFactory.createImage(connection, script, getWidth(), getHeight()));
 
