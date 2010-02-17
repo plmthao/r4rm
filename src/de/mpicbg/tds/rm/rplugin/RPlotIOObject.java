@@ -2,11 +2,11 @@ package de.mpicbg.tds.rm.rplugin;
 
 import com.rapidminer.example.set.SimpleExampleSet;
 import com.rapidminer.example.table.MemoryExampleTable;
-import com.rapidminer.operator.AbstractIOObject;
 import com.rapidminer.operator.IOObject;
 import com.rapidminer.report.Reportable;
 
-import java.util.List;
+import java.awt.*;
+import java.util.Map;
 
 
 /**
@@ -17,14 +17,16 @@ import java.util.List;
 public class RPlotIOObject extends SimpleExampleSet implements Reportable {
 
 
+	private Image image;
 	private String script;
-	private List<IOObject> inputs;
+	private Map<String, IOObject> pushTable;
 
 
-	public RPlotIOObject(String script, List<IOObject> inputs) {
+	public RPlotIOObject(Image image, String script, Map<String, IOObject> pushTable) {
 		super(new MemoryExampleTable());
+		this.image = image;
 		this.script = script;
-		this.inputs = inputs;
+		this.pushTable = pushTable;
 	}
 
 
@@ -33,7 +35,12 @@ public class RPlotIOObject extends SimpleExampleSet implements Reportable {
 	}
 
 
-	public List<IOObject> getInputs() {
-		return inputs;
+	public Map<String, IOObject> getPushTable() {
+		return pushTable;
+	}
+
+
+	public Image getImage() {
+		return image;
 	}
 }

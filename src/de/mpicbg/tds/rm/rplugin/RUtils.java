@@ -181,26 +181,49 @@ public class RUtils {
 		}
 	}
 
+
 	public static String getHost() {
 		return System.getProperty(PluginInitializer.R_SERVE_HOST, PluginInitializer.R_SERVE_HOST_DEFAULT);
 	}
 
-	public static List<String> push2R(RConnection connection, List<IOObject> inputs) throws RserveException, REXPMismatchException {
-		List<String> parNames = new ArrayList<String>();
 
-		for (int i = 0, inputSize = inputs.size(); i < inputSize; i++) {
-			IOObject ioObject = inputs.get(i);
+	public static Map<String, IOObject> push2R(RConnection connection, List<IOObject> inputs, ArrayList<String> parNames) throws RserveException, REXPMismatchException {
+
+		if (parNames != null) {
+			if (parNames.size() != inputs.size()) {
+				throw new RuntimeException("Number of r-variable names does not match the number of input tables");
+			}
+		} else {
+			parNames = new ArrayList<String>();
+
+			for (int i = 0; i < inputs.size(); i++) {
+				parNames.add("in" + (i + 1));
+			}
+		}
+
+		Map<String, IOObject> pushTable = new HashMap<String, IOObject>();
+		for (int i = 0; i < inputs.size(); i++) {
+			IOObject input = inputs.get(i);
+			pushTable.put(parNames.get(i), input);
+		}
+
+		return push2R(connection, pushTable);
+	}
+
+
+	public static Map<String, IOObject> push2R(RConnection connection, Map<String, IOObject> pushTable) throws RserveException, REXPMismatchException {
+		for (String parName : pushTable.keySet()) {
+			IOObject ioObject = pushTable.get(parName);
+
 			if (!(ioObject instanceof ExampleSet))
 				throw new RuntimeException();
 
 			ExampleSet exampleSet = (ExampleSet) ioObject;
 
 			RList inputAsRList = convert2RList(exampleSet);
-			String parName = "in" + (inputs.size() > 1 ? (i + 1) : "");
-			parNames.add(parName);
-
 			connection.assign(parName, REXP.createDataFrame(inputAsRList));
 		}
-		return parNames;
+
+		return pushTable;
 	}
 }

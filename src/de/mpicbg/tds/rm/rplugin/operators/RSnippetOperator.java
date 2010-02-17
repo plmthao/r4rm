@@ -49,7 +49,7 @@ public class RSnippetOperator extends Operator {
 			connection = RUtils.createConnection();
 
 			// 1) convert exampleSet ihnto data-frame and put into the r-workspace
-			RUtils.push2R(connection, inputs.getData(true));
+			RUtils.push2R(connection, inputs.getData(true), null);
 
 
 			// 2) run the script  (remove all linebreaks and other no space whitespace-characters
@@ -64,7 +64,7 @@ public class RSnippetOperator extends Operator {
 
 			connection.eval("rm(list = ls(all = TRUE));");
 			connection.close();
-			
+
 		} catch (Throwable e) {
 			connection.close();
 			throw new OperatorException("R script execution failed: " + script, e);
