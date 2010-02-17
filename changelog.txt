@@ -1,8 +1,0 @@
-
-
-0.8 (not yet released)
-- fixed: handling of dates
-- feature: customizable connection to rserve instance
-- feature: arbitrary numbe of input and output ports (which are accordingly mapped to r-workspace variables)
-- feature: customizable repaint-behavior: either recreate image on resize or just on double-click
-
