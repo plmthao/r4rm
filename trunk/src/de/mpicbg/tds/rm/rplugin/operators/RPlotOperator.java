@@ -13,11 +13,11 @@ import com.rapidminer.parameter.UndefinedParameterError;
 import de.mpicbg.tds.rm.rplugin.RImageFactory;
 import de.mpicbg.tds.rm.rplugin.RPlotIOObject;
 import de.mpicbg.tds.rm.rplugin.RUtils;
-import org.rosuda.REngine.RList;
 import org.rosuda.REngine.Rserve.RConnection;
 
 import java.awt.*;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -31,6 +31,7 @@ public class RPlotOperator extends Operator {
 
 	private InputPortExtender inputs = new InputPortExtender("input table", getInputPorts());
 	private OutputPort exampleSetOutput = getOutputPorts().createPort("example set output");
+
 
 	public RPlotOperator(OperatorDescription description) {
 		super(description);
@@ -51,10 +52,8 @@ public class RPlotOperator extends Operator {
 
 
 			// 1) convert exampleSet ihnto data-frame and put into the r-workspace
-			RList inputAsRList = null;
-
-			List<IOObject> inputs = this.inputs.getData(true);
-			RUtils.push2R(connection, inputs);
+			List<IOObject> ioObjects = inputs.getData(true);
+			Map<String, IOObject> pushTable = RUtils.push2R(connection, ioObjects, null);
 
 			// 2) create the image the script
 			Image image = RImageFactory.createImage(connection, script, 900, 700);
@@ -62,7 +61,7 @@ public class RPlotOperator extends Operator {
 			// close the connection to R
 			connection.close();
 
-			exampleSetOutput.deliver(new RPlotIOObject(script, inputs));
+			exampleSetOutput.deliver(new RPlotIOObject(image, script, pushTable));
 
 		} catch (Throwable e) {
 			connection.close();

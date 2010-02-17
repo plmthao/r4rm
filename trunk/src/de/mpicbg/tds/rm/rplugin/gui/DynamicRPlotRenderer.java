@@ -4,6 +4,7 @@ import com.rapidminer.gui.renderer.AbstractRenderer;
 import com.rapidminer.operator.IOContainer;
 import com.rapidminer.operator.IOObject;
 import com.rapidminer.report.Reportable;
+import de.mpicbg.tds.rm.rplugin.PluginInitializer;
 import de.mpicbg.tds.rm.rplugin.RImageFactory;
 import de.mpicbg.tds.rm.rplugin.RPlotIOObject;
 import de.mpicbg.tds.rm.rplugin.RUtils;
@@ -13,9 +14,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.PixelGrabber;
-import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -29,7 +32,7 @@ public class DynamicRPlotRenderer extends AbstractRenderer {
 
 	@Override
 	public Reportable createReportable(final Object renderable, IOContainer ioContainer, int desiredWidth, int desiredHeight) {
-		return null ;
+		return null;
 	}
 
 
@@ -55,7 +58,7 @@ public class DynamicRPlotRenderer extends AbstractRenderer {
 //
 //        canvas.setSize(image.getWidth(null), image.getHeight(null));
 
-		return new RPlotCanvas(exampleSet.getScript(), exampleSet.getInputs());
+		return new RPlotCanvas(exampleSet.getImage(), exampleSet.getScript(), exampleSet.getPushTable());
 	}
 
 
@@ -64,25 +67,41 @@ public class DynamicRPlotRenderer extends AbstractRenderer {
 		private Image image;
 
 
-		public RPlotCanvas(final String script, final List<IOObject> inputs) {
+		public RPlotCanvas(Image image, final String script, final Map<String, IOObject> pushTable) {
+			this.image = image;
+
 			addComponentListener(new ComponentAdapter() {
 				@Override
 				public void componentResized(ComponentEvent e) {
-					if (!isVisible())
+					if (!isVisible()) {
 						return;
+					}
 
-					image = recreateImage(inputs, script);
+					if (!Boolean.parseBoolean(System.getProperty(PluginInitializer.RELPOT_ON_RESIZE, "false"))) {
+						return;
+					}
+
+					RPlotCanvas.this.image = recreateImage(pushTable, script);
+				}
+			});
+
+			addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent mouseEvent) {
+					if (mouseEvent.getClickCount() == 2) {
+						RPlotCanvas.this.image = recreateImage(pushTable, script);
+					}
 				}
 			});
 		}
 
 
-		public BufferedImage recreateImage(List<IOObject> inputs, String script) {
+		public BufferedImage recreateImage(Map<String, IOObject> pushTable, String script) {
 			RConnection connection = null;
 			try {
 				connection = new RConnection();
 
-				RUtils.push2R(connection, inputs);
+				RUtils.push2R(connection, pushTable);
 
 				BufferedImage bufferedImage = toBufferedImage(RImageFactory.createImage(connection, script, getWidth(), getHeight()));
 
@@ -90,7 +109,9 @@ public class DynamicRPlotRenderer extends AbstractRenderer {
 
 				return bufferedImage;
 			} catch (Throwable e1) {
-				connection.close();
+				if (connection != null) {
+					connection.close();
+				}
 				throw new RuntimeException(e1);
 			}
 		}

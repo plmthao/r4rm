@@ -39,7 +39,7 @@ public class OpenInROperator extends Operator {
 
 			List<IOObject> inputs = this.inputs.getData(true);
 
-			if(inputs.isEmpty()) {
+			if (inputs.isEmpty()) {
 				// if there's no data we don't do nothing
 				return;
 			}
@@ -49,7 +49,7 @@ public class OpenInROperator extends Operator {
 			// 1) convert exampleSet ihnto data-frame and put into the r-workspace
 
 
-			List<String> parNames = RUtils.push2R(connection, inputs);
+			List<String> parNames = RUtils.push2R(connection, inputs, null);
 			// save the work-space to a temporary file and open R
 			File tmpFile = File.createTempFile("rplugin", ".RData");
 
@@ -92,8 +92,8 @@ public class OpenInROperator extends Operator {
 
 
 	/**
-	 * Try to determine whether this application is running under Windows or some other platform by examing the
-	 * "os.name" property.
+	 * Try to determine whether this application is running under Windows or some other platform by examing the "os.name"
+	 * property.
 	 *
 	 * @return true if this application is running under a Windows OS
 	 */
