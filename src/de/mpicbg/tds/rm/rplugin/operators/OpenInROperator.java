@@ -12,6 +12,7 @@ import org.rosuda.REngine.Rserve.RConnection;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -49,11 +50,11 @@ public class OpenInROperator extends Operator {
 			// 1) convert exampleSet ihnto data-frame and put into the r-workspace
 
 
-			List<String> parNames = RUtils.push2R(connection, inputs, null);
+			Map<String, IOObject> pushTable = RUtils.push2R(connection, inputs, null);
 			// save the work-space to a temporary file and open R
 			File tmpFile = File.createTempFile("rplugin", ".RData");
 
-			String allParams = parNames.toString().replace("[", "").replace("]", "").replace(" ", "");
+			String allParams = pushTable.keySet().toString().replace("[", "").replace("]", "").replace(" ", "");
 			connection.eval("save(" + allParams + ",file=\"" + tmpFile.getAbsolutePath().replace("\\", "/") + "\") ");
 			connection.eval("rm(list = ls(all = TRUE));");
 
