@@ -25,21 +25,6 @@
 
         </group>
 
-        <group key="HCS">
-            <icon>chart_pie.png</icon>
-
-
-            <group key="Screen Visualization">
-
-                <operator>
-                    <key>r_screen_lattice_plot</key>
-                    <class>de.mpicbg.tds.rm.hcstools.visualization.LatticePlotOperator</class>
-                    <replaces>R Lattice Plot</replaces>
-                </operator>
-
-            </group>
-
-        </group>
 
     </group>
     <!--<factory>com.rapidminer.tools.WekaOperatorFactory</factory>-->
